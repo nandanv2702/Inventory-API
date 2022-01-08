@@ -1,4 +1,5 @@
 import { Length, Max, Min } from "class-validator";
+import { ObjectId } from "mongoose";
 import { ArgsType, Field } from "type-graphql"
 
 @ArgsType()
@@ -22,11 +23,25 @@ export class NewProductInput {
     @Field()
     @Length(5, 100)
     name: string;
-    
+
     @Field()
     @Length(5, 150)
     description: string;
-    
+
+    @Field()
+    @Min(1)
+    unitPrice: number;
+}
+
+@ArgsType()
+export class ModifyProductInput {
+    @Field(() => String)
+    _id: ObjectId
+
+    @Field()
+    @Length(5, 150)
+    description: string;
+
     @Field()
     @Min(1)
     unitPrice: number;
