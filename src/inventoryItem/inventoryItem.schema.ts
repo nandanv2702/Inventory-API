@@ -6,18 +6,18 @@ import { Field, ObjectType } from 'type-graphql';
 
 @ObjectType()
 export default class InventoryItem {
-    @Field(_type => String)
+    @Field(() => String)
     readonly _id: ObjectId;
-    
-    @Field(_type => [Product])
-    @prop({ ref: () => Product })
+
+    @Field(() => Product)
+    @prop({ ref: 'Product', required: true })
     public Product!: Ref<Product>
 
-    @Field(_type => [Warehouse])
-    @prop({ ref: () => Warehouse })
+    @Field(() => Warehouse)
+    @prop({ ref: 'Warehouse', required: true })
     public Warehouse!: Ref<Warehouse>
 
-    @Field(_type => Number)
+    @Field(() => Number)
     @prop({ required: true, min: 0 })
     public stock!: number
 }
