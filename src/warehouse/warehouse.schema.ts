@@ -1,11 +1,11 @@
-import { prop, Ref } from '@typegoose/typegoose'
+import { getModelForClass, prop, Ref } from '@typegoose/typegoose'
 import { ObjectId } from 'mongoose';
 import { Field, ObjectType } from 'type-graphql';
 import InventoryItem from '../inventoryItem/inventoryItem.schema'
 
 @ObjectType()
 export default class Warehouse {
-    @Field(_type => String)
+    @Field(() => String)
     readonly _id: ObjectId;
 
     @Field()
@@ -18,11 +18,13 @@ export default class Warehouse {
 
     // validate zipcode regex
     // from https://howtodoinjava.com/java/regex/us-postal-zip-code-validation/
-    @Field(_type => Number)
+    @Field(() => String)
     @prop({ minlength: 5, maxlength: 9, match: /^[0-9]{5}(?:-[0-9]{4})?$/ })
-    public zipCode: number
+    public zipCode: string
 
-    @Field(_type => [InventoryItem])
-    @prop({ ref: () => InventoryItem })
+    @Field(() => [InventoryItem])
+    @prop({ ref: 'InventoryItem' })
     public InventoryItems?: Ref<InventoryItem>[];
 }
+
+export const WarehouseModel = getModelForClass(Warehouse)
