@@ -22,12 +22,17 @@ export default class ProductResolver {
     }
 
     @Mutation(() => Product)
-    async addProduct(@Args() newProductData: NewProductInput): Promise<Product | Error> {
+    async addProduct(@Args({ validate: true }) newProductData: NewProductInput): Promise<Product | Error> {
         return await this.productService.addProduct(newProductData)
     }
 
     @Mutation(() => Boolean)
-    async modifyProduct(@Args() modifyProductData: ModifyProductInput): Promise<Boolean | Error> {
+    async modifyProduct(@Args({ validate: true }) modifyProductData: ModifyProductInput): Promise<Boolean | Error> {
         return await this.productService.modifyProduct(modifyProductData)
+    }
+
+    @Mutation(() => Boolean)
+    async deleteProduct(@Arg('id') id: string): Promise<Boolean> {
+        return await this.productService.deleteProduct(id)
     }
 }

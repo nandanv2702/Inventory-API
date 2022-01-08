@@ -33,4 +33,12 @@ export default class ProductService {
         }
         return true
     }
+
+    public async deleteProduct(_id: string): Promise<Boolean> {
+        const { deletedCount } = await ProductModel.deleteOne({ _id })
+        if (deletedCount === 0) {
+            return false
+        }
+        return true
+    }
 }

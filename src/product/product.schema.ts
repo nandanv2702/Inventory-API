@@ -23,7 +23,7 @@ export default class Product {
     public unitPrice!: number
 
     @Field(() => [InventoryItem])
-    @prop({ ref: () => InventoryItem })
+    @prop({ ref: 'InventoryItem' })
     public InventoryItems?: Ref<InventoryItem>[];
 }
 
