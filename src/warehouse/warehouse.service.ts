@@ -1,5 +1,5 @@
 import { ModifyWarehouseInput, NewWarehouseInput, WarehouseArgs, WarehouseNotFoundError } from './warehouse.helpers'
-import { WarehouseModel } from './warehouse.schema'
+import WarehouseModel from './warehouse.model'
 
 export default class WarehouseService {
     public async findById(id: string) {

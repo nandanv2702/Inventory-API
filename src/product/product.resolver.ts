@@ -1,3 +1,4 @@
+import 'reflect-metadata'
 import { Arg, Args, Query, Resolver, Mutation } from "type-graphql";
 import Product from "./product.schema";
 import ProductService from "./product.service";

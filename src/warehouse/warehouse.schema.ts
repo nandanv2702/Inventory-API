@@ -1,7 +1,6 @@
-import { getModelForClass, prop, Ref } from '@typegoose/typegoose'
+import { prop } from '@typegoose/typegoose'
 import { ObjectId } from 'mongoose';
 import { Field, ObjectType } from 'type-graphql';
-import InventoryItem from '../inventoryItem/inventoryItem.schema'
 
 @ObjectType()
 export default class Warehouse {
@@ -21,10 +20,4 @@ export default class Warehouse {
     @Field(() => String)
     @prop({ minlength: 5, maxlength: 9, match: /^[0-9]{5}(?:-[0-9]{4})?$/ })
     public zipCode: string
-
-    @Field(() => [InventoryItem])
-    @prop({ ref: 'InventoryItem' })
-    public InventoryItems?: Ref<InventoryItem>[];
 }
-
-export const WarehouseModel = getModelForClass(Warehouse)

@@ -1,5 +1,5 @@
 import { ModifyProductInput, NewProductInput, ProductArgs, ProductNotFoundError } from './product.helpers'
-import { ProductModel } from './product.schema'
+import ProductModel from './product.model'
 
 export default class ProductService {
     public async findById(id: string) {

@@ -1,7 +1,6 @@
-import { getModelForClass, prop, Ref } from '@typegoose/typegoose'
+import { prop } from '@typegoose/typegoose'
 import { ObjectId } from 'mongoose';
 import { Field, ObjectType } from 'type-graphql';
-import InventoryItem from '../inventoryItem/inventoryItem.schema'
 
 @ObjectType()
 export default class Product {
@@ -21,10 +20,4 @@ export default class Product {
     @Field(() => Number, { nullable: true })
     @prop({ required: true, min: 1 })
     public unitPrice!: number
-
-    @Field(() => [InventoryItem])
-    @prop({ ref: 'InventoryItem' })
-    public InventoryItems?: Ref<InventoryItem>[];
 }
-
-export const ProductModel = getModelForClass(Product)

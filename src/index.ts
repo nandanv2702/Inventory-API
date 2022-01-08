@@ -4,12 +4,14 @@ import express from 'express'
 import { buildSchema } from 'type-graphql'
 import { connect } from 'mongoose'
 import ProductResolver from './product/product.resolver'
+import WarehouseResolver from './warehouse/warehouse.resolver'
+import InventoryItemResolver from './inventoryItem/inventoryItem.resolver'
 
 const main = async () => {
     const schema = await buildSchema({
-        resolvers: [ProductResolver]
+        resolvers: [ProductResolver, WarehouseResolver, InventoryItemResolver]
     })
-    
+
     const apolloServer = new ApolloServer({
         schema
     })
