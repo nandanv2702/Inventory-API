@@ -1,10 +1,11 @@
 import { prop, Ref } from '@typegoose/typegoose'
 import { ObjectId } from 'mongoose';
-import { Field } from 'type-graphql';
+import { Field, ObjectType } from 'type-graphql';
 import InventoryItem from '../inventoryItem/inventoryItem.schema'
 
+@ObjectType()
 export default class Warehouse {
-    @Field()
+    @Field(_type => String)
     readonly _id: ObjectId;
 
     @Field()

@@ -2,10 +2,12 @@ import 'reflect-metadata'
 import { ApolloServer } from 'apollo-server-express'
 import express from 'express'
 import { buildSchema } from 'type-graphql'
+import { connect } from 'mongoose'
+import ProductResolver from './product/product.resolver'
 
 const main = async () => {
     const schema = await buildSchema({
-        resolvers: [__dirname + "./**/*.resolver.{ts,js}"]
+        resolvers: [ProductResolver]
     })
     
     const apolloServer = new ApolloServer({
@@ -17,6 +19,8 @@ const main = async () => {
     const app = express()
 
     apolloServer.applyMiddleware({ app })
+
+    connect('mongodb://localhost:27017/inv-gql')
 
     app.listen(4000, () => {
         console.log('listening on :4000/graphql');
