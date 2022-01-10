@@ -10,8 +10,11 @@ export default class InventoryItemResolver {
 
     @Query(() => InventoryItem)
     async inventoryItem(@Arg("id") id: string): Promise<InventoryItem | null> {
-        const product = await this.inventoryService.findById(id);
+        const product = await this.inventoryService
+            .findById(id)
+
         console.log(product)
+
         if (!product) {
             throw InventoryNotFoundError(id);
         }

@@ -4,7 +4,8 @@ import ProductModel from './product.model'
 export default class ProductService {
     public async findById(id: string) {
         try {
-            return await ProductModel.findById(id)
+            return await ProductModel
+                .findById(id)
         } catch (err) {
             throw ProductNotFoundError(id)
         }
@@ -19,7 +20,7 @@ export default class ProductService {
 
     public async addProduct({ name, description, unitPrice }: NewProductInput) {
         try {
-            return await ProductModel.create({ name, description, unitPrice })
+            return await ProductModel.create({ name: name.trim(), description: description.trim(), unitPrice })
         }
         catch (err) {
             return { name: err.name, message: err.message }
@@ -27,7 +28,7 @@ export default class ProductService {
     }
 
     public async modifyProduct({ _id, description, unitPrice }: ModifyProductInput): Promise<Boolean> {
-        const updated = await ProductModel.updateOne({ _id }, { description, unitPrice })
+        const updated = await ProductModel.updateOne({ _id }, { description: description.trim(), unitPrice })
         if (updated.modifiedCount !== 1) {
             return false
         }

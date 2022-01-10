@@ -19,7 +19,7 @@ export default class WarehouseService {
 
     public async addWarehouse({ name, streetAddress, zipCode }: NewWarehouseInput) {
         try {
-            return await WarehouseModel.create({ name, streetAddress, zipCode })
+            return await WarehouseModel.create({ name: name.trim(), streetAddress: streetAddress.trim(), zipCode: zipCode.trim() })
         }
         catch (err) {
             return { name: err.name, message: err.message }
@@ -27,7 +27,7 @@ export default class WarehouseService {
     }
 
     public async modifyWarehouse({ _id, streetAddress, zipCode }: ModifyWarehouseInput): Promise<Boolean> {
-        const updated = await WarehouseModel.updateOne({ _id }, { streetAddress, zipCode })
+        const updated = await WarehouseModel.updateOne({ _id }, { streetAddress: streetAddress.trim(), zipCode: zipCode.trim() })
         if (updated.modifiedCount !== 1) {
             return false
         }
