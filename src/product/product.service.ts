@@ -1,13 +1,22 @@
+import { ObjectId } from 'mongoose'
 import { ModifyProductInput, NewProductInput, ProductArgs, ProductNotFoundError } from './product.helpers'
 import ProductModel from './product.model'
 
 export default class ProductService {
-    public async findById(id: string) {
+    public async findById(id: string | ObjectId) {
         try {
             return await ProductModel
                 .findById(id)
         } catch (err) {
             throw ProductNotFoundError(id)
+        }
+    }
+
+    public async findByName(name: string) {
+        try {
+            return await ProductModel.findOne({ name })
+        } catch (err) {
+            throw ProductNotFoundError(name)
         }
     }
 

@@ -16,7 +16,9 @@ export default class Product {
     @prop({ minlength: 5, maxlength: 150, lowercase: true })
     public description?: string
 
-    // price in cents
+    /**
+     * this is the unit price in cents
+     */
     @Field(() => Number, { nullable: true })
     @prop({ required: true, min: 1 })
     public unitPrice!: number

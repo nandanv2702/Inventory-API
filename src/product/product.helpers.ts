@@ -14,8 +14,8 @@ export class ProductArgs {
     limit: number = 25;
 }
 
-export function ProductNotFoundError(id: string) {
-    throw new Error(`Product with id ${id} not found`)
+export function ProductNotFoundError(id: string | ObjectId) {
+    throw new Error(`Product with id/name ${id} not found`)
 }
 
 @ArgsType()
@@ -28,6 +28,9 @@ export class NewProductInput {
     @Length(5, 150)
     description: string;
 
+    /**
+     * this is the unit price in cents
+     */
     @Field()
     @Min(1)
     unitPrice: number;
