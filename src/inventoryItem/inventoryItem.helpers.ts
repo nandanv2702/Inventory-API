@@ -19,15 +19,21 @@ export function InventoryNotFoundError(id: string) {
 }
 
 @ArgsType()
-export class updateInventoryInput {
+export class updateStockInput {
+    @Field(() => String)
+    _id: ObjectId
+
+    @Field()
+    changeStockBy?: number
+}
+
+@ArgsType()
+export class setStockInput {
     @Field(() => String)
     _id: ObjectId
 
     @Field()
     stock?: number
-
-    @Field()
-    changeStockBy?: number
 }
 
 @ArgsType()

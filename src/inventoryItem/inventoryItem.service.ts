@@ -1,4 +1,4 @@
-import { updateInventoryInput, NewInventoryInput, InventoryArgs, InventoryNotFoundError } from './inventoryItem.helpers'
+import { updateStockInput, NewInventoryInput, InventoryArgs, InventoryNotFoundError, setStockInput } from './inventoryItem.helpers'
 import InventoryItemModel from './inventoryItem.model'
 
 export default class InventoryService {
@@ -29,7 +29,7 @@ export default class InventoryService {
         }
     }
 
-    public async updateStock({ _id, changeStockBy }: updateInventoryInput): Promise<Boolean> {
+    public async updateStock({ _id, changeStockBy }: updateStockInput): Promise<Boolean> {
         const updated = await InventoryItemModel.updateOne({ _id },
             {
                 $inc: {
@@ -43,7 +43,7 @@ export default class InventoryService {
         return true
     }
 
-    public async setStock({ _id, stock }: updateInventoryInput): Promise<Boolean> {
+    public async setStock({ _id, stock }: setStockInput): Promise<Boolean> {
         const updated = await InventoryItemModel.updateOne({ _id }, { stock })
 
         if (updated.modifiedCount !== 1) {
