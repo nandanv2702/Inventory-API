@@ -80,6 +80,25 @@ describe('Product Resolver', () => {
             })
         )
     })
+
+    it('should delete product', async () => {
+        const existingInfo = await productDb.findByName(seedData.name)
+
+        expect(existingInfo).toHaveProperty('_id')
+
+        const deleted = await gCall({
+            source: deleteProductMutation,
+            variableValues: {
+                "deleteProductId": existingInfo!._id.toString(),
+            }
+        })
+
+        expect(deleted!.data!.deleteProduct).toBeTruthy()
+
+        const doesExist = await productDb.findByName(seedData.name)
+
+        expect(doesExist).toBeNull()
+    })
 })
 
 const seedData = {
@@ -100,4 +119,8 @@ mutation Mutation($name: String!, $description: String!, $unitPrice: Float!) {
 
 const modifyProductMutation = `mutation Mutation($id: String!, $description: String!, $unitPrice: Float!) {
   modifyProduct(_id: $id, description: $description, unitPrice: $unitPrice)
+}`
+
+const deleteProductMutation = `mutation DeleteProduct($deleteProductId: String!) {
+  deleteProduct(id: $deleteProductId)
 }`
