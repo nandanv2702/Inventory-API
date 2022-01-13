@@ -8,7 +8,7 @@ export default class Warehouse {
     readonly _id: ObjectId;
 
     @Field()
-    @prop({ required: true, minlength: 5, maxlength: 200, lowercase: true })
+    @prop({ required: true, minlength: 5, maxlength: 200, lowercase: true, unique: true })
     public name!: string
 
     @Field()

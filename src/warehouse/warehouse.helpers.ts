@@ -14,8 +14,8 @@ export class WarehouseArgs {
     limit: number = 25;
 }
 
-export function WarehouseNotFoundError(id: string) {
-    throw new Error(`Warehouse with id ${id} not found`)
+export function WarehouseNotFoundError(identifier: string | ObjectId) {
+    throw new Error(`Warehouse with id/name ${identifier} not found`)
 }
 
 @ArgsType()

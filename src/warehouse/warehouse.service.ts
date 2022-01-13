@@ -10,6 +10,14 @@ export default class WarehouseService {
         }
     }
 
+    public async findByName(name: string) {
+        try {
+            return await WarehouseModel.findOne({ name })
+        } catch (err) {
+            throw WarehouseNotFoundError(name)
+        }
+    }
+
     public async findAll({ skip, limit = 10 }: WarehouseArgs) {
         return await WarehouseModel
             .find({})
