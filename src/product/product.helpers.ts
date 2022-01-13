@@ -14,8 +14,8 @@ export class ProductArgs {
     limit: number = 25;
 }
 
-export function ProductNotFoundError(id: string | ObjectId) {
-    throw new Error(`Product with id/name ${id} not found`)
+export function ProductNotFoundError(identifier: string | ObjectId) {
+    throw new Error(`Product with id/name ${identifier} not found`)
 }
 
 @ArgsType()

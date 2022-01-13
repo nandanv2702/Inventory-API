@@ -1,7 +1,7 @@
 import { setupConnection, closeDatabase, mongoserver } from '../../test-utils/setup'
 import { gCall } from '../../test-utils/gCall'
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import ProductService from '../product/product.service'
+import ProductService from './product.service'
 
 const productDb = new ProductService()
 
@@ -35,7 +35,7 @@ describe('Product Resolver', () => {
         expect(dbCall!.unitPrice).toEqual(seedData.unitPrice)
     })
 
-    it('should not create a product with the same name', async () => {
+    it('should not create a product with duplicate name', async () => {
         const duplicate = await gCall({
             source: addProductMutation,
             variableValues: seedData
@@ -79,6 +79,22 @@ describe('Product Resolver', () => {
                 unitPrice: 4550
             })
         )
+    })
+
+    it('should not accept string for unitPrice', async () => {
+        const existingInfo = await productDb.findByName(seedData.name)
+
+        expect(existingInfo).toHaveProperty('_id')
+
+        const modified = await gCall({
+            source: modifyProductMutation,
+            variableValues: {
+                "id": existingInfo!._id.toString(),
+                "unitPrice": "4550"
+            }
+        })
+
+        expect(modified.errors).toBeDefined()
     })
 
     it('should delete product', async () => {
