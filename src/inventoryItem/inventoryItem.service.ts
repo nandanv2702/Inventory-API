@@ -20,8 +20,20 @@ export default class InventoryService {
             .limit(limit)
     }
 
+    public async find(args: any) { return await InventoryItemModel.find(args) }
+
     public async addInventoryItem({ stock, Product, Warehouse }: NewInventoryInput) {
         try {
+            // check if combination already exists
+            const exists = await this.find({
+                Product,
+                Warehouse
+            })
+
+            if (exists.length > 0) {
+                throw new Error('Combination already exists')
+            }
+
             return await InventoryItemModel.create({ stock, Product, Warehouse })
         }
         catch (err) {
