@@ -20,8 +20,8 @@ beforeAll(async () => {
     await setupConnection(mongod)
 
     try {
-        await setupProduct();
-        await setupWarehouse();
+        await setupProducts();
+        await setupWarehouses();
     } catch (e) {
         throw new Error(`Error: ${e.message}`)
     }
@@ -116,12 +116,105 @@ describe('Inventory Item Resolver', () => {
         expect(result!.errors).toBeDefined()
         expect(result!.data).toBeNull()
     })
+
+    it('should not initialize with negative stock', async () => {
+        const result = await gCall({
+            source: addInventoryItemMutation,
+            variableValues: {
+                "product": productIds[0],
+                "warehouse": warehouseIds[0],
+                "stock": -100
+            }
+        });
+
+        expect(result!.errors).toBeDefined()
+        expect(result!.data).toBeNull()
+    })
+
+    it('should increment stock', async () => {
+        const existingItem = await inventoryDb.findAll({ skip: 0, limit: 1 })
+
+        const result = await gCall({
+            source: updateStockMutation,
+            variableValues: {
+                "id": existingItem[0]._id.toString(),
+                "changeStockBy": 50
+            }
+        });
+
+        expect(result!.data!.updateStock).toBeTruthy()
+
+        const checkItem = await inventoryDb.findById(existingItem[0]._id.toString())
+
+        expect(checkItem.stock).toBe(existingItem[0].stock + 50)
+    })
+
+    it('should decrement stock', async () => {
+        const existingItem = await inventoryDb.findAll({ skip: 0, limit: 1 })
+
+        const result = await gCall({
+            source: updateStockMutation,
+            variableValues: {
+                "id": existingItem[0]._id.toString(),
+                "changeStockBy": -50
+            }
+        });
+
+        expect(result!.data!.updateStock).toBeTruthy()
+
+        const checkItem = await inventoryDb.findById(existingItem[0]._id.toString())
+
+        expect(checkItem.stock).toBe(existingItem[0].stock - 50)
+    })
+
+    it('should not decrement stock below 0', async () => {
+        const existingItem = await inventoryDb.findAll({ skip: 0, limit: 1 })
+
+        const result = await gCall({
+            source: updateStockMutation,
+            variableValues: {
+                "id": existingItem[0]._id.toString(),
+                "changeStockBy": -existingItem[0].stock - 100
+            }
+        });
+
+        expect(result!.data!.updateStock).toBeFalsy()
+
+        const checkItem = await inventoryDb.findById(existingItem[0]._id.toString())
+
+        expect(checkItem.stock).toBe(existingItem[0].stock)
+    })
+
+    it('should set stock to desired value', async () => {
+        const existingItem = await inventoryDb.findAll({ skip: 0, limit: 1 })
+
+        const result = await gCall({
+            source: setStockMutation,
+            variableValues: {
+                "id": existingItem[0]._id.toString(),
+                "stock": 9000
+            }
+        });
+
+        expect(result).toHaveProperty('data.setStock')
+        expect(result!.data!.setStock).toBeTruthy()
+
+        const modifiedItem = await inventoryDb.findById(existingItem[0]._id.toString())
+
+        expect(modifiedItem.stock).toEqual(9000)
+    })
 })
 
 const productData = {
     "name": "test product",
     "description": "test description",
     "unitPrice": 6000
+}
+
+const otherProductData = {
+    "name": "test product 2",
+    "description": "test description 2",
+    "unitPrice": 5000
 }
 
 const addProductMutation = `
@@ -140,6 +233,12 @@ const warehouseData = {
     "zipCode": "17101"
 }
 
+const otherWarehouseData = {
+    "name": "test warehouse 2",
+    "streetAddress": "1234 other street",
+    "zipCode": "17444"
+}
+
 const addWarehouseMutation = `
 mutation Mutation($name: String!, $streetAddress: String!, $zipCode: String!) {
   addWarehouse(name: $name, streetAddress: $streetAddress, zipCode: $zipCode) {
@@ -150,38 +249,64 @@ mutation Mutation($name: String!, $streetAddress: String!, $zipCode: String!) {
   }
 }`
 
-async function setupProduct() {
-    const result = await gCall({
-        source: addProductMutation,
-        variableValues: productData
-    });
+async function setupProducts() {
+    const rawResults =
+        [
+            await gCall({
+                source: addProductMutation,
+                variableValues: productData
+            }),
+            await gCall({
+                source: addProductMutation,
+                variableValues: otherProductData
+            })
+        ]
 
-    console.log(result!.data!.addProduct);
+    const results = await Promise.all(rawResults)
 
+    results.forEach((result) => {
+        expect(result).toHaveProperty('data.addProduct._id')
 
-    expect(result).toHaveProperty('data.addProduct._id')
+        console.log(`ID is ${result!.data!.addProduct._id}`);
 
-    console.log(`ID is ${result!.data!.addProduct._id}`);
-
-    productIds.push(result!.data!.addProduct._id);
+        productIds.push(result!.data!.addProduct._id);
+    })
 }
 
-async function setupWarehouse() {
-    const result = await gCall({
-        source: addWarehouseMutation,
-        variableValues: warehouseData
-    });
+async function setupWarehouses() {
+    const rawResults =
+        [
+            await gCall({
+                source: addWarehouseMutation,
+                variableValues: warehouseData
+            }),
+            await gCall({
+                source: addWarehouseMutation,
+                variableValues: otherWarehouseData
+            })
+        ]
 
-    expect(result).toHaveProperty('data.addWarehouse._id')
+    const results = await Promise.all(rawResults)
 
-    console.log(`Warehouse ID is ${result!.data!.addWarehouse._id}`);
+    results.forEach((result) => {
+        expect(result).toHaveProperty('data.addWarehouse._id')
 
-    warehouseIds.push(result!.data!.addWarehouse._id);
+        warehouseIds.push(result!.data!.addWarehouse._id);
+    })
+
 }
 
 const addInventoryItemMutation = `mutation AddInventoryItem($product: String!, $warehouse: String!, $stock: Float!) {
   addInventoryItem(Product: $product, Warehouse: $warehouse, stock: $stock) {
     _id
   }
+}`
+
+const updateStockMutation = `mutation UpdateStock($id: String!, $changeStockBy: Float!) {
+  updateStock(_id: $id, changeStockBy: $changeStockBy)
+}`
+
+const setStockMutation = `mutation SetStock($id: String!, $stock: Float!) {
+  setStock(_id: $id, stock: $stock)
 }`
 
